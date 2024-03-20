@@ -1,4 +1,3 @@
-
 /**
  * Format a number, in the form of cents, to a string in the form of dollars
  * @param {number} money - The number to format

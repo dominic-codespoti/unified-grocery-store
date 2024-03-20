@@ -1,4 +1,4 @@
-import { Woolworths } from "./woolworths";
+import { Woolworths } from './woolworths';
 
 export const woolworths = new Woolworths();
 

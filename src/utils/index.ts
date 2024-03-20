@@ -1,2 +1,2 @@
-export { default as config } from '../../tamagui.config'
-export * from './formatting'
+export { default as config } from '../../tamagui.config';
+export * from './formatting';

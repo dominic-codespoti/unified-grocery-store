@@ -3,34 +3,34 @@ import type { ProductProduct, WoolworthsResult } from './woolworthsDtos';
 import type { Product } from './types';
 
 interface WoolworthsSearchResultPage {
-  merchant: 'woolworths';
-  keyword: string;
-  products: Product[];
+  merchant: 'woolworths'
+  keyword: string
+  products: Product[]
 }
 
 export class Woolworths {
   private sessionId: string | null = null;
-  private baseUrl = 'https://www.woolworths.com.au';
-  private headers = { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3' };
+  private readonly baseUrl = 'https://www.woolworths.com.au';
+  private readonly headers = { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3' };
 
-  async search(keyword: string, page = 1, category?: string): Promise<WoolworthsSearchResultPage> {
+  async search (keyword: string, page = 1, category?: string): Promise<WoolworthsSearchResultPage> {
     await this.initializeSession();
 
-    const filters: { Key: string; Items: { Term: string }[] }[] = [];
+    const filters: Array<{ Key: string, Items: Array<{ Term: string }> }> = [];
     if (category === 'Fruit & vegetables') {
       filters.push({ Key: 'Category', Items: [{ Term: '1-E5BEE36E' }] });
-    } else if (category) {
+    } else if (category == null) {
       console.warn(`Unsupported category: ${category}`);
     }
 
     const body = {
       Filters: filters,
       IsSpecial: false,
-      Location: `/shop/search/products`,
+      Location: '/shop/search/products',
       PageNumber: page,
       PageSize: 30,
       SearchTerm: keyword,
-      SortType: 'TraderRelevance',
+      SortType: 'TraderRelevance'
     };
 
     const response = await this.post('/apis/ui/Search/products', body);
@@ -44,7 +44,7 @@ export class Woolworths {
     return { merchant: 'woolworths', keyword, products };
   }
 
-  private preprocessProduct(product: ProductProduct, keyword: string, index: number): Product {
+  private preprocessProduct (product: ProductProduct, keyword: string, index: number): Product {
     const displayName = product.DisplayName;
     const size = product.PackageSize;
     const url = `https://www.woolworths.com.au/shop/productdetails/${product.Stockcode}/${product.UrlFriendlyName}`;
@@ -61,32 +61,32 @@ export class Woolworths {
       link: url,
       imageLink: imageUrl,
       updatedAt: Date.now(),
-      notes: JSON.stringify({ isOnSpecial, label, index, keyword }),
+      notes: JSON.stringify({ isOnSpecial, label, index, keyword })
     };
   }
 
-  private get = (url: string, options?: RequestInit): Promise<Response> => {
-    return fetch(`${this.baseUrl}${url}`, {
+  private readonly get = async (url: string, options?: RequestInit): Promise<Response> => {
+    return await fetch(`${this.baseUrl}${url}`, {
       headers: {
         ...this.headers,
-        ...options?.headers,
-      },
+        ...options?.headers
+      }
     });
   };
 
-  private post = (url: string, body: any): Promise<Response> => {
-    return fetch(`${this.baseUrl}${url}`, {
-      method: "POST",
+  private readonly post = async (url: string, body: any): Promise<Response> => {
+    return await fetch(`${this.baseUrl}${url}`, {
+      method: 'POST',
       headers: {
         ...this.headers,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify(body)
     });
   };
 
-  private async initializeSession() {
-    if (!this.sessionId) {
+  private async initializeSession (): Promise<void> {
+    if (this.sessionId == null) {
       await this.get('/', { headers: { 'Cache-Control': 'no-cache' } });
       this.sessionId = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, new Date().toISOString());
     }

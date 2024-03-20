@@ -1,38 +1,35 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
-import { SplashScreen, Stack } from 'expo-router'
-import { useColorScheme } from 'react-native'
-import { TamaguiProvider } from 'tamagui'
-import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator'
-import { useFonts } from 'expo-font'
-import { useEffect } from 'react'
-import { config } from 'config'
-import { db, migrations } from 'db'
+import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { SplashScreen, Stack } from 'expo-router';
+import { useColorScheme } from 'react-native';
+import { TamaguiProvider } from 'tamagui';
+import { useFonts } from 'expo-font';
+import React from 'react';
+import { config } from 'utils';
 
-export { ErrorBoundary } from 'expo-router'
+export { ErrorBoundary } from 'expo-router';
 
-SplashScreen.preventAutoHideAsync()
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
-export default function RootLayout() {
-  const { success, error } = useMigrations(db, migrations)
-  const colorScheme = useColorScheme()
+export default function RootLayout (): JSX.Element | null {
+  const colorScheme = useColorScheme();
   const [interLoaded, interError] = useFonts({
     Inter: require('@tamagui/font-inter/otf/Inter-Medium.otf'),
-    InterBold: require('@tamagui/font-inter/otf/Inter-Bold.otf'),
-  })
+    InterBold: require('@tamagui/font-inter/otf/Inter-Bold.otf')
+  });
 
-  useEffect(() => {
-    if (interLoaded || interError) {
-      SplashScreen.hideAsync()
+  React.useEffect(() => {
+    if (interLoaded || interError != null) {
+      SplashScreen.hideAsync().catch(() => {});
     }
-  }, [interLoaded, interError])
+  }, [interLoaded, interError]);
 
-  if (!interLoaded && !interError) {
-    return null
+  if (!interLoaded && interError == null) {
+    return null;
   }
 
   return (
     <TamaguiProvider config={config} defaultTheme={colorScheme as any}>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         </Stack>
