@@ -8,6 +8,8 @@ interface WoolworthsSearchResultPage {
   products: Product[]
 }
 
+type Filters = Array<{ Key: string, Items: Array<{ Term: string }> }>;
+
 export class Woolworths {
   private sessionId: string | null = null;
   private readonly baseUrl = 'https://www.woolworths.com.au';
@@ -16,11 +18,10 @@ export class Woolworths {
   async search (keyword: string, page = 1, category?: string): Promise<WoolworthsSearchResultPage> {
     await this.initializeSession();
 
-    const filters: Array<{ Key: string, Items: Array<{ Term: string }> }> = [];
+    const filters: Filters = [];
+
     if (category === 'Fruit & vegetables') {
       filters.push({ Key: 'Category', Items: [{ Term: '1-E5BEE36E' }] });
-    } else if (category == null) {
-      console.warn(`Unsupported category: ${category}`);
     }
 
     const body = {

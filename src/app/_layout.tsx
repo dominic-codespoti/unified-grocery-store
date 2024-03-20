@@ -5,6 +5,7 @@ import { TamaguiProvider } from 'tamagui';
 import { useFonts } from 'expo-font';
 import React from 'react';
 import { config } from 'utils';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export { ErrorBoundary } from 'expo-router';
 
@@ -30,9 +31,11 @@ export default function RootLayout (): JSX.Element | null {
   return (
     <TamaguiProvider config={config} defaultTheme={colorScheme as any}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        </Stack>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <Stack>
+            <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
+          </Stack>
+        </GestureHandlerRootView>
       </ThemeProvider>
     </TamaguiProvider>
   );
